@@ -1,0 +1,46 @@
+import time, random, os, platform
+
+class Typing(Self,...):
+	put all functions related to word display speed, or just the words themselves here
+
+class Pokemon(self,....):
+	all the class info and functions related to pokemon is stored here
+	can insert a dictionary of names and their attributes (if any) here
+
+class Images(self, ...):
+	put all the ACSII art under this class, call them from here
+
+class Currency(self,...):
+	put all shop and money-related functions here
+
+class Timer(self,...):
+	timer stuff here
+
+#functions that don't fit well in classes
+other functions here
+
+#set up basic classes and parameters
+global parameters here
+
+
+def main():
+	#actual code to run goes here
+	earn initial currency
+	introduction
+	choose difficulty
+	choose mode
+	solve problem
+	check win or lose
+	earn currency
+	repeat 
+	
+if __name__ == "__main__":
+	main()
+
+
+Things to do:
+set up timer system
+set up potion shop
+ensure potion works correctly in main()
+add text scrolling
+add ACSII art of pokemon to encounter()
