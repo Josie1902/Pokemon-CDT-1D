@@ -31,6 +31,8 @@ difficulty_levels = ["Easy", "Medium", "Hard"]
 pokemon_fight = None
 difficulty = None
 
+main_options = None
+
 
 def main_menu():
     print(
@@ -46,50 +48,58 @@ def main_menu():
         --------------------------------------------
         """
     )
+
     while True:
         try:
-            catch = int(input("Which pokemon do you want to catch first? "))
-            if catch == 1 or catch == 2:
+            global main_options
+            main_options = int(input("Ready to start your adventure? "))
+            if main_options == 1 or main_options == 2:
                 global pokemon_fight
-                pokemon_fight = pokemon_fights[catch - 1]
+                pokemon_fight = pokemon_fights[main_options - 1]
                 print(f"You have choosen {pokemon_fight} as your opponent!")
                 break
+            elif main_options == 3:
+                # pokemart
+                pass
+            # elif main_options == 4:
+            #     end_game()
             else:
                 print("I don't understand the input")
         except:
             continue
-    print(
-        """
-        Difficulty levels:
-        [1]: Easy 
-        [2]: Medium
-        [3]: Hard
-        """
-    )
-    while True:
-        try:
-            difficulty_setting = int(input("What is your chosen difficulty?: "))
-            global difficulty
-            difficulty = difficulty_levels[difficulty_setting - 1]
-            if (
-                difficulty_setting == 1
-                or difficulty_setting == 2
-                or difficulty_setting == 3
-            ):
-                if difficulty_setting == 1:
-                    print(f"You have chosen the {difficulty} level.")
-                    break
-                elif difficulty_setting == 2:
-                    print(f"You have chosen the {difficulty} level.")
-                    break
-                elif difficulty_setting == 3:
-                    print(f"You have chosen the {difficulty} level.")
-                    break
-            else:
-                print("Choose from Level 1 to 3")
-        except:
-            continue
-    pass
+
+    if main_options == 1 or main_options == 2:
+        print(
+            """
+            Difficulty levels:
+            [1]: Easy 
+            [2]: Medium
+            [3]: Hard """
+        )
+        while True:
+            try:
+                difficulty_setting = int(input("What is your chosen difficulty?: "))
+                global difficulty
+                difficulty = difficulty_levels[difficulty_setting - 1]
+                if (
+                    difficulty_setting == 1
+                    or difficulty_setting == 2
+                    or difficulty_setting == 3
+                ):
+                    if difficulty_setting == 1:
+                        print(f"You have chosen the {difficulty} level.")
+                        break
+                    elif difficulty_setting == 2:
+                        print(f"You have chosen the {difficulty} level.")
+                        break
+                    elif difficulty_setting == 3:
+                        print(f"You have chosen the {difficulty} level.")
+                        break
+                    else:
+                        print("Choose from Level 1 to 3")
+                        break
+            except:
+                continue
 
 
 # Functions used by later functions
@@ -200,6 +210,9 @@ def solve_question():
 
 def game_play():
     main_menu()
+    if main_options == 4:
+        print(main_options)
+        end_game()
     solve_question()
     pass
 
@@ -260,12 +273,10 @@ def start_game():
     N = 0
     while True:
         choice = input("Help the Professor?(Y/N): ")
-
         if choice == "Y":
             print("Prof: Thank you so much!\n")
             game_play()
             break
-
         elif choice == "N":
             N += 1
             if N == 1:
@@ -274,9 +285,14 @@ def start_game():
                 print("I'll give you bonus marks for M&A assessment later...")
             elif N == 3:
                 print("Sigh...No adventures for you then...")
-                return 0
+                break
         else:
             print("Wait, what? I don't understand you.")
+
+
+def end_game():
+    print("GAME ENDED")
+    exit()
 
 
 start_game()
