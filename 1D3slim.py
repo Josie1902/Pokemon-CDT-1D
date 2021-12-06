@@ -1,6 +1,54 @@
 import time, random, os, platform
 
 
+class Images:
+    # put all the ACSII art under this class, call them from here
+    chewie = r"""
+    #############
+    ##         ##
+    #  ~~   ~~  #
+    #  ()   ()  #
+    (     ^     )
+     |         |
+     |  {===}  |
+      \       /
+     /  -----  \
+  ---  |%\ /%|  ---
+ /     |%%%%%|     \ 
+       |%/ \%|      
+        """  # https://www.asciiart.eu/people/faces
+    chewietalk = """
+    Professor Chewie: Welcome to Mathematica Island! 
+    I am Chewie, a researcher on this island.
+    There are 2 Pokemons on the loose:
+    Addition and Subtraction.
+    Will you help me catch them?
+            """
+    icecream = r"""
+        \________
+        /  __  __\
+        /   (.) (.)\
+        /      (_/\_)\
+        ______________
+            """
+
+    owl1 = r"""
+        /\___/\
+        ( =^.^=)
+         (")(")_/
+            """
+    owl2 = r"""
+        (\ _ /)
+        ( 'X' )
+        C(")(")
+            """
+    owl3 = r"""
+         ^---^
+        ( 'o' )
+        (  uu )
+            """
+
+
 class Typing:  # For text effect and animation
     def __init__(self):
         pass
@@ -115,12 +163,11 @@ class Typing:  # For text effect and animation
 
 
 # For Store, Potion and money related stuff
-
-
 class Currency:
-    def __init__(self, money, potion):
+    def __init__(self, money, potion, potioninbag):
         self.money = int(money)
         self.potion = int(potion)
+        self.potioninbag = int(potioninbag)
 
     def pokemart(self):
         if self.potion > 0:
@@ -147,25 +194,33 @@ What would you like to buy today?
                     print("Please come another time!\n")
                 else:
                     print("\nYou have selected %s" % ans)
-                    multiplier = input("How many of it would you like? (1 to 5) ")
+                    multiplier = input("How many of it would you like? ")
                     while (not multiplier.isdigit()) or not (
-                        1 <= int(multiplier) <= 10
+                        1 <= int(multiplier) <= self.potion
                     ):
                         print("Please type [number] and [enter]!")
                         multiplier = input("How many of it would you like? (1 to 5) ")
                     m = int(multiplier)
                     if self.potion >= m:
-                        self.potion -= m
                         itemprice = m * itemprice
-                        print(f"That would be a total of ${itemprice}")
-                        self.money -= itemprice
-                        T.slowtype(
-                            """\n 
+                        print(f"That would be a total of ${itemprice} \n")
+                        if self.money < itemprice:
+                            print("Sorry, you dont have enough money to buy this.\n")
+                            print("Please come another time!\n")
+                        else:
+                            self.potion -= m
+                            self.potioninbag += m
+                            print(
+                                f"You currently have {self.potioninbag} potions in your bag.\n"
+                            )
+                            self.money -= itemprice
+                            T.slowtype(
+                                """\n 
 Thank you for shopping with us, 
 Hope to see you again! 
                         """
-                        )
-                        self.checkmoney()
+                            )
+                            self.checkmoney()
                     else:
                         print(
                             f"Sorry we only have {self.potion} potions in stock right now"
@@ -178,7 +233,9 @@ Hope to see you again!
             print("Please come another time!\n")
 
     def gainmoney(self, moneytoadd):
+        T.slowtype(f"You have gained: ${moneytoadd} \n")
         self.money += moneytoadd
+        self.checkmoney()
         pass
 
     def checkmoney(self):
@@ -209,7 +266,8 @@ class Pokemon:
 
 # global variables
 T = Typing()
-C = Currency(0, 20)
+C = Currency(0, 20, 0)
+I = Images()
 Addition = Pokemon("Addition", "easy", 5, 1)
 Subtraction = Pokemon("Subtraction", "easy", 5, 1)
 Player = Pokemon("no name", "no type", 5, 1)
@@ -241,21 +299,21 @@ def main_menu():
         try:
             global main_options
             main_options = int(input("Ready to start your adventure? "))
-            if main_options == 1 or main_options == 2:
+            if (main_options) == 1 or (main_options) == 2:
                 global pokemon_fight
                 pokemon_fight = pokemon_fights[main_options - 1]
                 print(f"You have choosen {pokemon_fight} as your opponent!")
                 break
-            elif main_options == 3:
+            elif (main_options) == 3:
                 C.pokemart()
                 game_play()
                 break
-            elif main_options == 4:
+            elif (main_options) == 4:
                 break
             else:
                 print("I don't understand the input")
         except:
-            continue
+            print("I don't understand the input")
 
     if main_options == 1 or main_options == 2:
         print(
@@ -322,12 +380,15 @@ def options():
             if action == "1":
                 break
             elif action == "2":
-                if Player.health < 5:
-                    Player.health += 1
-                    print(f"Health added. Current health: {Player.health}")
-                    break
+                if C.potioninbag > 0:
+                    if Player.health < 5:
+                        Player.health += 1
+                        print(f"Health added. Current health: {Player.health}")
+                        break
+                    else:
+                        print("You already have max health!")
                 else:
-                    print("You already have max health!")
+                    print(f"You currently have {C.potioninbag} potions in your bag")
             elif action == "3":
                 game_play()
         except:
@@ -347,20 +408,26 @@ def solve_question():
         loop2 = Subtraction.health
 
     while 0 < loop1 <= 5 and 0 < loop2 <= 5:
-        two_numbers = random_generator(0, 1000)
+        two_numbers = random_generator(0, 1)
 
         options()
 
         if pokemon_fight == "Addition":
+            start = time.time()
             correct_ans = two_numbers[0] + two_numbers[1]
-            ans = int(input(f"Solve sum of {two_numbers[0]} and {two_numbers[1]}:"))
+            ans = input(f"Solve sum of {two_numbers[0]} and {two_numbers[1]}:")
+            end = time.time()
+            print("It took you", int(end - start), "seconds to attempt this problem!")
         elif pokemon_fight == "Subtraction":
+            start = time.time()
             correct_ans = abs(two_numbers[0] - two_numbers[1])
-            ans = int(
-                input(f"Solve difference of {two_numbers[0]} and {two_numbers[1]}:")
+            ans = input(
+                f"Solve difference between {two_numbers[0]} and {two_numbers[1]}:"
             )
+            end = time.time()
+            print("It took you", int(end - start), "seconds to attempt this problem!")
         try:
-            if ans == correct_ans:
+            if int(ans) == correct_ans:
                 if pokemon_fight == "Addition":
                     Addition.damage_taken()
                     # clear_screen()
@@ -398,6 +465,32 @@ def solve_question():
         except ValueError:
             print("Please only type integers!")
 
+    if Addition.health == 0:
+        print("Victory. You defeated Addition!")
+        if difficulty == "Easy":
+            moneytoadd = 1000 * 1
+        elif difficulty == "Medium":
+            moneytoadd = 1000 * 2
+        elif difficulty == "Hard":
+            moneytoadd = 1000 * 3
+        C.gainmoney(moneytoadd)
+        Addition.health = 5
+        game_play()
+    elif Subtraction.health == 0:
+        print("Victory. You defeated Subtraction!")
+        if difficulty == "Easy":
+            moneytoadd = 1000 * 1
+        elif difficulty == "Medium":
+            moneytoadd = 1000 * 2
+        elif difficulty == "Hard":
+            moneytoadd = 1000 * 3
+        C.gainmoney(moneytoadd)
+        game_play()
+        Subtraction.health = 5
+    elif Player.health == 0:
+        print("Further refine your math skills to defeat this opponent!")
+        game_play()
+
 
 def game_play():
     main_menu()
@@ -408,6 +501,11 @@ def game_play():
 def start_game():
     print("---Gotta Solve Em' All---")
     player_name = input("What is your name? ")
+    while (
+        player_name == ""
+    ):  # Ensure that they enter an input with length of at least 1
+        print("Please enter a valid name!")
+        player_name = input("What is your name? ")
     print(
         f"""
         Welcome player {player_name}!
@@ -429,43 +527,21 @@ def start_game():
             else:
                 print("Choose amongst the 3 pokemons provided")
         except:
-            continue
+            print("Choose amongst the 3 pokemons provided")
     time.sleep(1)
-    print("------------------------------------------")
-    print(  # https://www.asciiart.eu/people/faces
-        r"""
-    #############       
-    ##         ##      
-    #  ~~   ~~  #    
-    #  ()   ()  #      
-    (     ^     )       
-     |         |        
-     |  {===}  |      
-      \       /       
-     /  -----  \      
-  ---  |%\ /%|  ---     
- /     |%%%%%|     \    
-       |%/ \%|                                    
-        """
-    )
     print(
-        f"Prof Chewbaka: Welcome to Mathematica Island, {player_name}!\n"
-        "I am Professor Chewbaka, a researcher on this island.\n"
-        "There are 2 Pokemons on the loose:\n"
-        "Addition and Subtraction.\n"
-        "Will you help me catch them?\n"
-    )
-
+        "------------------------------------------"
+    )  # https://www.asciiart.eu/people/faces
+    print(T.concatimage(I.chewie, I.chewietalk))
     time.sleep(1)
-
     N = 0
     while True:
         choice = input("Help the Professor?(Y/N): ")
-        if choice == "Y":
+        if choice == "Y" or choice == "y":
             print("Prof: Thank you so much!\n")
             game_play()
             break
-        elif choice == "N":
+        elif choice == "N" or choice == "n":
             N += 1
             if N == 1:
                 print("Come on... Don't you want to help me? :(")
