@@ -61,8 +61,8 @@ def main_menu():
             elif main_options == 3:
                 # pokemart
                 pass
-            # elif main_options == 4:
-            #     end_game()
+            elif main_options == 4:
+                break
             else:
                 print("I don't understand the input")
         except:
@@ -100,6 +100,8 @@ def main_menu():
                         break
             except:
                 continue
+    if main_options == 4:
+        end_game()
 
 
 # Functions used by later functions
@@ -210,9 +212,6 @@ def solve_question():
 
 def game_play():
     main_menu()
-    if main_options == 4:
-        print(main_options)
-        end_game()
     solve_question()
     pass
 
@@ -292,7 +291,7 @@ def start_game():
 
 def end_game():
     print("GAME ENDED")
-    exit()
+    os.abort()
 
 
 start_game()
