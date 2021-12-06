@@ -213,6 +213,7 @@ def solve_question():
 def game_play():
     main_menu()
     solve_question()
+    game_play()
     pass
 
 
